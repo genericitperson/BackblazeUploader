@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Authors>Sam Foley</Authors>
+    <Description>A .Net Core based multi-platform file uploader for use with Backblaze B2</Description>
+    <Copyright>Sam Foley</Copyright>
+    <PackageProjectUrl>https://github.com/genericitperson/BackblazeUploader</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="MimeTypesMap" Version="1.0.8" />
+  </ItemGroup>
+
+</Project>
