@@ -42,7 +42,7 @@ namespace BackblazeUploader
         /// <summary>
         /// Flag so other threads can pass message to stop working.
         /// </summary>
-        public bool StopMonitoring = true;
+        public bool StopMonitoring = false;
 
         /// <summary>
         /// Starts the bandwidth monitor
