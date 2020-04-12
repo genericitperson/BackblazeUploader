@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -125,6 +125,8 @@ namespace BackblazeUploader
                     {
                         //Set urgentReduceUsage to true
                         urgentReduceUsage = true;
+                        //Set this as te time we've most recently requested a reduction in threads
+                        LastFailedPing = DateTime.Now;
                         //Output thats what we want
                         StaticHelpers.DebugLogger($"Average of last 3 pings: {Last3Results.Average()}. Request urgent reduction in threads...", DebugLevel.Verbose);
                     }
