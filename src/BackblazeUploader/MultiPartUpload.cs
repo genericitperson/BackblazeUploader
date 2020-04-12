@@ -74,6 +74,10 @@ namespace BackblazeUploader
         /// Used to monitor bandwidth performance
         /// </summary>
         BandwidthMonitor bandwidthMonitor = new BandwidthMonitor();
+        /// <summary>
+        /// List of all the threads we have created, access required by multiple parts of the page.
+        /// </summary>
+        List<Thread> AllThreads = new List<Thread>();
         #endregion
 
         #region Constructor
@@ -231,11 +235,7 @@ namespace BackblazeUploader
         public void RunUploadWorkers()
         {
  
-            //Create a list to hold all the threads
-            List<Thread> AllThreads = new List<Thread>();
-
-            
-
+ 
             //Start the bandwidth monitor
             bandwidthMonitor.startMonitoring();
             //Set WorkFinished to false
@@ -243,7 +243,6 @@ namespace BackblazeUploader
             //Start a continious loop until we have finished the work
             while (WorkFinished == false)
             {
-
                 //If we are under max threads and bandwidth monitor doesn't forbid it and we haven't already started all parts
                 if (maxThreads > AllThreads.Count() && bandwidthMonitor.CanIncrease == true && noMoreThreads == false)
                 {
@@ -258,7 +257,7 @@ namespace BackblazeUploader
                 //Recalculate number of active threads by removing inactive
                 AllThreads.RemoveAll(thread => thread.ThreadState == System.Threading.ThreadState.Stopped);
                 //Output a debug message
-                StaticHelpers.DebugLogger($"Current number of threads = {AllThreads.Count}", DebugLevel.Verbose);
+                StaticHelpers.DebugLogger($"Current number of threads = {AllThreads.Count}", DebugLevel.FullDebug);
 
                 //If whole file has been uploaded and all threads are stopped
                 if (uploadDetails.totalBytesSent >= localFileSize && AllThreads.Count() == 0)
@@ -295,12 +294,19 @@ namespace BackblazeUploader
                 //If the bandwidth monitor requires a reduction in usage
                 if (bandwidthMonitor.reduceUsage || bandwidthMonitor.urgentReduceUsage)
                 {
-                    //Log to debug
-                    StaticHelpers.DebugLogger("Received Kill Request from Bandwidth Monitor. Killing self....", DebugLevel.FullDebug);
-                    //Set reduceUsage to false
-                    bandwidthMonitor.reduceUsage = false;
-                    //Kill this thread
-                    break;
+                    //Check thread count is greater than 1
+                    if (AllThreads.Count(thread => thread.ThreadState != System.Threading.ThreadState.Stopped) > 1)
+                    {
+                        //Log to debug
+                        StaticHelpers.DebugLogger("Received Kill Request from Bandwidth Monitor. Killing self....", DebugLevel.Verbose);
+                        //Set reduceUsage to false
+                        bandwidthMonitor.reduceUsage = false;
+                        //Kill this thread
+                        break;
+                    } else
+                    {
+                        StaticHelpers.DebugLogger("Received Kill Request from Bandwidth Monitor HOWEVER as the only remaining thread I am ignoring.", DebugLevel.Verbose);
+                    }
                 }
                 //Create variables outside of the lock so we can set it inside but still access it outside
                 //For a snapshot of uploadDetails
