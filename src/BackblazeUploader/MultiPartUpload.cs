@@ -317,6 +317,13 @@ namespace BackblazeUploader
                 //Lock the uploadDetails
                 lock (uploadDetailsLock)
                 {
+                    #region Check if we are on the last part or even if there are no parts left
+                    //If there is nothing left to upload
+                    if ((localFileSize - uploadDetails.totalBytesSent) == 0)
+                    {
+                        //Break out of the loop as there is no more work to do
+                        break;
+                    }
                     //If the remaining bytes are less the minimum part size
                     if ((localFileSize - uploadDetails.totalBytesSent) <= uploadDetails.minimumPartSize)
                     {
