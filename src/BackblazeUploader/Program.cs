@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using System;
 using System.IO;
 using System.Linq;
@@ -56,7 +56,7 @@ namespace BackblazeUploader
             DateTime End = DateTime.Now;
             //Get the difference between the two as a string
             string diffInSeconds = (End - Start).TotalSeconds.ToString();
-            StaticHelpers.DebugLogger("Operation Finished. Operation Took: " + diffInSeconds + " seconds", DebugLevel.Info);
+            StaticHelpers.DebugLogger("Total program runtime: " + diffInSeconds + " seconds", DebugLevel.FullDebug);
             //Console.ReadLine();
             //Kill the program with a success exit code (needed because of threads left running):
             Environment.Exit(0);
@@ -69,7 +69,7 @@ namespace BackblazeUploader
             if (File.Exists(opts.filePath) == false)
             {
                 //Throw an error cause the file doesn't exist, for now just write to console.
-                Console.WriteLine("The file specified does not exist! File specified was: " + Singletons.options.filePath);
+                StaticHelpers.DebugLogger("The file specified does not exist! File specified was: " + Singletons.options.filePath, DebugLevel.Error);
             }
             
             //Set options to our singleton

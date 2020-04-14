@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Text;
 using System.IO;
@@ -59,11 +59,11 @@ namespace BackblazeUploader
             {
                 using (HttpWebResponse errorResponse = (HttpWebResponse)e.Response)
                 {
-                    Console.WriteLine("Error code: {0}", errorResponse.StatusCode);
+                    StaticHelpers.DebugLogger($"Internal Worker Error with API.Error code: {errorResponse.StatusCode}. Retrying....", DebugLevel.Warn );
                     using (StreamReader reader = new StreamReader(errorResponse.GetResponseStream()))
                     {
                         String text = reader.ReadToEnd();
-                        Console.WriteLine(text);
+                        StaticHelpers.DebugLogger($"Internal Worker Error with API.Error code: {text}. Retrying....", DebugLevel.Warn );
                     }
                 }
             }
@@ -150,12 +150,12 @@ namespace BackblazeUploader
                     using (WebResponse r = e.Response)
                     {
                         HttpWebResponse httpResponse = (HttpWebResponse)r;
-                        Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    StaticHelpers.DebugLogger($"Internal Worker Error with API.Error code: {httpResponse.StatusCode}. Retrying....", DebugLevel.Warn );
                         using (Stream dataE = r.GetResponseStream())
                         using (var reader = new StreamReader(dataE))
                         {
                             string text = reader.ReadToEnd();
-                            Console.WriteLine(text);
+                            StaticHelpers.DebugLogger($"Internal Worker Error with API.Error code: {text}. Retrying....", DebugLevel.Warn );
                         }
                     }
                 }

@@ -89,7 +89,7 @@ namespace BackblazeUploader
             int LowBaseLine = (int)Last5Seconds.Average() * 5;
 
             //Output
-            StaticHelpers.DebugLogger($"Test ping average is: {Last5Seconds.Average()}. Baseline set at: {LowBaseLine}");
+            StaticHelpers.DebugLogger($"Test ping average is: {Last5Seconds.Average()}. Baseline set at: {LowBaseLine}", DebugLevel.Verbose);
 
             
 
