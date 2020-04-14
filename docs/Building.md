@@ -2,18 +2,20 @@
 
 To build this project you require a compatible version of visual studio, from there a build should simply work.
 
-To generate our single file builds we use either of the below commands.
+To generate our builds we use the commands below, these can be customised to meet your needs if necessary.
 
-- For the self contained installer:
-
-```
-dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
-```
-
-- For a reduced size file:
+### Windows Exe including runtime (no dependencies)
 
 ```
-dotnet publish -r win-x64 -c Release /p:PublishTrimmed=true
+dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:PublishTrimmed=true
+```
+This command results in several files in the bin\win-x64\publish folder. Only the .exe is required for distribution.
+
+### Windows Exe without runtime (requires .Net Core 3.0)
+
+```
+dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true --self-contained false
 ```
 
-*Please note: You can combine the two /p options to get both a self contained and a reduced file size build*
+This command results in several files in the bin\win-x64\publish folder. Only the .exe is required for distribution.
+
