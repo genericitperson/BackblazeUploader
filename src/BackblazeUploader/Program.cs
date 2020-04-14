@@ -1,4 +1,4 @@
-using CommandLine;
+﻿using CommandLine;
 using System;
 using System.IO;
 using System.Linq;
@@ -25,6 +25,9 @@ namespace BackblazeUploader
         {
             //Get start datetime to calculate time taken
             DateTime Start = DateTime.Now;
+
+            //Place the cursor bottom left of the window so summary is always there and status messages roll up
+            Console.CursorTop = Console.WindowTop + Console.WindowHeight - 1;
 
             //Parse commandline options This is using this parser (may or may not be best but works for now): https://github.com/commandlineparser/commandline
             var ParserResult = Parser.Default.ParseArguments<Options>(args).WithParsed<Options>(OptionsToOptions) ;

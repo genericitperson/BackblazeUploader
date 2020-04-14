@@ -9,6 +9,7 @@ namespace BackblazeUploader
     /// </summary>
     static class StaticHelpers
     {
+
         /// <summary>
         /// Logs to various output streams.
         /// </summary>
@@ -73,9 +74,21 @@ namespace BackblazeUploader
                 return;
             }
 
-            //Take the message and log it to the console
-            Console.WriteLine(formattedMessage);
+            //Log this message over the current summary line and then add the summary line on again afterwards.
+            Console.Write("\r" + formattedMessage + "\n" + Singletons.LastSummaryMessage);
             #endregion
+        }
+
+        /// <summary>
+        /// Update the summary information line
+        /// </summary>
+        /// <param name="message"></param>
+        internal static void UpdateSummary(string message)
+        {
+            //Write the message over the last line (will always be the summary)
+            Console.Write("\r" + message);
+            //Update the summary message in the singleton
+            Singletons.LastSummaryMessage = message;
         }
     }
 }

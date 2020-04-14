@@ -240,6 +240,8 @@ namespace BackblazeUploader
             bandwidthMonitor.startMonitoring();
             //Set WorkFinished to false
             bool WorkFinished = false;
+            //Put up a blank status summary
+            StaticHelpers.UpdateSummary($"Progress: 0%");
             //Start a continious loop until we have finished the work
             while (WorkFinished == false)
             {
@@ -288,9 +290,11 @@ namespace BackblazeUploader
             UploadPartsUrlDetails uploadPartsUrlDetails = await GetUploadPartUrl();
 
 
+            #region Loop where work is done
             //While there are bytes still be sent
             while (uploadDetails.totalBytesSent < localFileSize)
             {
+                #region Check Bandwidth Monitor
                 //If the bandwidth monitor requires a reduction in usage
                 if (bandwidthMonitor.reduceUsage || bandwidthMonitor.urgentReduceUsage)
                 {
@@ -308,6 +312,8 @@ namespace BackblazeUploader
                         StaticHelpers.DebugLogger("Received Kill Request from Bandwidth Monitor HOWEVER as the only remaining thread I am ignoring.", DebugLevel.Verbose);
                     }
                 }
+                #endregion
+                #region Get details from uploadDetails & Data from file
                 //Create variables outside of the lock so we can set it inside but still access it outside
                 //For a snapshot of uploadDetails
                 UploadDetails uploadDetailsSnapshot = new UploadDetails();
@@ -329,9 +335,9 @@ namespace BackblazeUploader
                     {
                         //Changes the bytes sent for part to the remaining number of bytes
                         uploadDetails.bytesSentForPart = (localFileSize - uploadDetails.totalBytesSent);
-
                     }
-
+                    #endregion
+                    #region Read & hash File
                     // Generate SHA1 Chunk
                     // Open stream of the file
                     FileStream f = File.OpenRead(pathToFile);
@@ -356,7 +362,8 @@ namespace BackblazeUploader
                     f.Close();
                     //Add the hash to the hash array
                     uploadDetails.partSha1Array.Add(sb.ToString());
-
+                    #endregion
+                    #region Finalise Operations on uploadDetails so we can release lock
                     //Get all the values we might need to use internally. OR just make a snapshot of Upload Details? (Yes this should work!)
                     uploadDetailsSnapshot = uploadDetails.CloneMe();
 
@@ -365,8 +372,10 @@ namespace BackblazeUploader
                     uploadDetails.partNo++;
                     //Increment the totalBytesSent
                     uploadDetails.totalBytesSent = uploadDetails.totalBytesSent + uploadDetails.bytesSentForPart;
+                    #endregion
 
                 }
+                #endregion
                 //To count number of failed attempts
                 int WebRequestAttempt = 1;
                 //To allow retry of the failed request
@@ -452,10 +461,24 @@ namespace BackblazeUploader
                
                 //Close the upload part response
                 uploadPartResponse.Close();
+                //Lock so we can work on uploadDetails
+                lock (uploadDetailsLock)
+                {
+                    //Update uploadDetails with the fact this part has been completed
+                    uploadDetails.BytesConfirmedSent = uploadDetails.BytesConfirmedSent + uploadDetailsSnapshot.bytesSentForPart;
+                    //Calculate the decimal amount completed
+                    double decimalPercentage = (double)uploadDetails.BytesConfirmedSent / (double)localFileSize;
+                    //Calculate the percentage completed
+                    int percentage = (int)(decimalPercentage * 100);
+                    //Output to the console the percentage completed
+                    StaticHelpers.UpdateSummary($"Progress: {percentage}%");
+
+                }
                 //Log to the debugger what part we've just done
                 StaticHelpers.DebugLogger("Uploaded Part " + uploadDetailsSnapshot.partNo, DebugLevel.Verbose);
                 
             }
+            #endregion
             //Check whether we have finished or if just this thread being killed:
             if (uploadDetails.totalBytesSent >= localFileSize)
             {

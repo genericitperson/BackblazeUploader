@@ -78,5 +78,9 @@ namespace BackblazeUploader
             set { mlogFileLock = value; }
         }
 
+        /// <summary>
+        /// The last summary message outputted to the console
+        /// </summary>
+        public static string LastSummaryMessage { get; set; } = "Progress: 0%";
     }
 }

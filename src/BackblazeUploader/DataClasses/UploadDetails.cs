@@ -17,6 +17,10 @@ namespace BackblazeUploader
         /// </summary>
         public long totalBytesSent = 0;
         /// <summary>
+        /// Total bytes where success of the upload has been confirmed
+        /// </summary>
+        public long BytesConfirmedSent = 0;
+        /// <summary>
         /// Number of bytes to be sent for each part. Calculated based off the options.PartSize from the user or default.
         /// </summary>
         public long bytesSentForPart = Singletons.options.PartSize * (1000 * 1000);
